@@ -1,6 +1,6 @@
 # app/controllers/webhooks_controller.rb
 class WebhooksController < ApplicationController
-  protect_from_forgery with: :null_session # Disabling CSRF protection for the webhook
+  skip_before_action :verify_authenticity_token, only: [:webhook]
 
   def webhook
     body = JSON.parse(request.raw_post)
