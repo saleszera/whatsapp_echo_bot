@@ -6,13 +6,13 @@ class WebhooksController < ApplicationController
     body = JSON.parse(request.raw_post)
     Rails.logger.debug(JSON.pretty_generate(body))
 
-    if body['object'] == 'page'
-      messaging = body['entry'][0]['messaging'][0]
-      phone_id = body['entry'][0]["changes"][0]['phone_number_id']
-
-      if messaging['message']
-        sender_id = messaging['sender']['id']
-        message_text = messaging['message']['text']
+    if body['object'] == 'whatsapp_business_account'
+      messaging = body['entry'][0]['changes'][0]
+      
+      if messaging['value']
+        sender_id = messaging['value']['messages'][0]['from']
+        phone_id = messaging['value']['metadata']['phone_number_id']
+        message_text = messaging['value']['messages'][0]['text']['body']
 
         response_message = "Ack: #{message_text}"
         send_message(sender_id, phone_id, response_message)
