@@ -32,12 +32,10 @@ class WebhooksController < ApplicationController
   def send_message(recipient_id, message)
     url = "https://graph.facebook.com/v12.0/me/messages?access_token=#{ENV['WHATSAPP_TOKEN']}"
     payload = {
-      messaging_type: 'RESPONSE',
-      recipient: {
-        id: recipient_id
-      },
-      message: {
-        text: message
+      messaging_product: "whatsapp",
+      to: recipient_id,
+      text: {
+        body: message
       }
     }
     
