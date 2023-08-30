@@ -8,13 +8,14 @@ class WebhooksController < ApplicationController
 
     if body['object'] == 'page'
       messaging = body['entry'][0]['messaging'][0]
+      phone_id = body['entry'][0]["changes"][0]['phone_number_id']
 
       if messaging['message']
         sender_id = messaging['sender']['id']
         message_text = messaging['message']['text']
 
         response_message = "Ack: #{message_text}"
-        send_message(sender_id, response_message)
+        send_message(sender_id, phone_id, response_message)
       end
 
       head :ok
@@ -29,10 +30,14 @@ class WebhooksController < ApplicationController
 
   private
 
-  def send_message(recipient_id, message)
-    url = "https://graph.facebook.com/v12.0/me/messages?access_token=#{ENV['WHATSAPP_TOKEN']}"
+  def send_message(recipient_id, phone_id, message)
+    Rails.logger.debug("Sending a message from #{phone_id} to #{recipient_id}")
+
+    url = "https://graph.facebook.com/v17.0/#{phone_id}/messages?access_token=#{ENV['WHATSAPP_TOKEN']}"
     payload = {
       messaging_product: "whatsapp",
+      recipient_type: "individual",
+      type: "text",
       to: recipient_id,
       text: {
         body: message
